@@ -54,12 +54,12 @@
                     <h4> Comments </h4>
                 </div>
 
-                <div class="p-4">
+                <div class="p-4 bg-indigo-dark">
                     @foreach ($comment_tree as $comment_branch)
                         @foreach ($comment_branch as $comment)
-                            <div style="margin-left: {{ 2 * $comment->tree_depth }}rem" class="shadow-outline my-2">
+                            <div style="margin-left: {{ 2 * $comment->tree_depth }}rem" class="bg-white shadow-md my-2">
                                 <div class="border-black border-b p-2">
-                                    <p class="font-bold text-grey-darkest text-xs mb-3">
+                                    <p class="font-bold text-red text-xs mb-2">
                                         {{ $comment->poster_name }}:
                                     </p>
                                     <p>
@@ -78,7 +78,7 @@
                             
                                         <div class="text-right">
                                             <button class="py-1 hover:bg-red text-xs px-2 bg-red-dark text-white">
-                                                POST REPLY
+                                                REPLY
                                             </button>
                                         </div>
                                     </form>

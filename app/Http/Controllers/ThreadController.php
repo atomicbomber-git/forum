@@ -35,6 +35,7 @@ class ThreadController extends Controller
         $root_comment_ids = DB::table('comments')
             ->select('comments.id', DB::raw('COUNT(comments.id) - 1 AS ancestor_count'))
             ->join('comment_paths', 'comment_paths.descendant_id', '=', 'comments.id')
+            ->where('comments.thread_id', $thread->id)
             ->groupBy('comments.id')
             ->having('ancestor_count', 0)
             ->pluck('id');
@@ -44,6 +45,7 @@ class ThreadController extends Controller
             ->join('comment_paths', 'comment_paths.descendant_id', '=', 'comments.id')
             ->join('users', 'users.id', '=', 'comments.poster_id')
             ->whereIn('comment_paths.ancestor_id', $root_comment_ids)
+            ->where('comments.thread_id', $thread->id)
             ->orderBy('comment_paths.ancestor_id')
             ->orderBy('comment_paths.tree_depth')
             ->get()
