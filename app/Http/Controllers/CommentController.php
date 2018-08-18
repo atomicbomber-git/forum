@@ -46,16 +46,17 @@ class CommentController extends Controller
 
     public function delete(Comment $comment)
     {
-
         $descendant_ids = CommentPath::query()
             ->select('descendant_id')
             ->where('ancestor_id', $comment->id)
             ->pluck('descendant_id');
 
-        CommentPath::whereIn('descendant_id', $descendant_ids)
+        DB::transaction(function() use($comment, $descendant_ids) {
+            CommentPath::whereIn('descendant_id', $descendant_ids)
             ->delete();
 
-        $comment->delete();
+            $comment->delete();
+        });
 
         return back();
     }
