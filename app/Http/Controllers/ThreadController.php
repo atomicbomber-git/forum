@@ -32,25 +32,25 @@ class ThreadController extends Controller
 
     public function detail(Thread $thread)
     {
-        $root_comment_ids = DB::table('comments')
-            ->select('comments.id', DB::raw('COUNT(comments.id) - 1 AS ancestor_count'))
-            ->join('comment_paths', 'comment_paths.descendant_id', '=', 'comments.id')
-            ->where('comments.thread_id', $thread->id)
-            ->groupBy('comments.id')
-            ->having('ancestor_count', 0)
-            ->pluck('id');
-
-        $comment_tree = DB::table('comments')
-            ->select('comment_paths.ancestor_id', 'comments.id', 'users.name AS poster_name', 'comments.content', 'comment_paths.tree_depth')
-            ->join('comment_paths', 'comment_paths.descendant_id', '=', 'comments.id')
+        $comment_tree = DB::table('comment_paths')
+            ->select(DB::raw('GROUP_CONCAT(ancestor_id ORDER BY ancestor_id) AS hierarchy'), 'users.name AS poster_name', 'comments.content')
+            ->join('comments', 'comments.id', '=', 'comment_paths.descendant_id')
             ->join('users', 'users.id', '=', 'comments.poster_id')
-            ->whereIn('comment_paths.ancestor_id', $root_comment_ids)
-            ->where('comments.thread_id', $thread->id)
-            ->orderBy('comment_paths.ancestor_id')
-            ->orderBy('comment_paths.tree_depth')
+            ->groupBy('descendant_id', 'poster_name', 'comments.content')
+            ->orderBy('hierarchy')
+            ->orderBy('comments.created_at')
             ->get()
-            ->groupBy('ancestor_id');
-
+            ->map(
+                function ($item) {
+                    $temp = explode(',', $item->hierarchy);
+                    return [
+                        'id' => (int) end($temp),
+                        'tree_depth' => count($temp),
+                        'poster_name' => $item->poster_name,
+                        'content' => $item->content
+                    ];
+                });
+                
         return view('thread.detail', [
             'thread' => $thread,
             'comment_tree' => $comment_tree

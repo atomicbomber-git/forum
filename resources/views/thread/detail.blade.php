@@ -58,33 +58,31 @@
                 </div>
 
                 <div class="p-4 bg-indigo-dark text-base">
-                    @foreach ($comment_tree as $comment_branch)
-                        @foreach ($comment_branch as $comment)
-                            <div style="margin-left: {{ 2 * $comment->tree_depth }}rem" class="bg-white shadow-md my-2">
-                                <div class="border-black border-b p-2">
-                                    <p class="font-bold text-red text-xs mb-2">
-                                        {{ $comment->poster_name }}:
-                                    </p>
-                                    <p>
-                                        "{{ $comment->content }}"
-                                    </p>
+                    @foreach ($comment_tree as $comment)
+                        <div style="margin-left: {{ 2 * $comment['tree_depth'] }}rem" class="bg-white shadow-md my-2">
+                            <div class="border-black border-b p-2">
+                                <p class="font-bold text-red text-xs mb-2">
+                                    {{ $comment['poster_name'] }}:
+                                </p>
+                                <p>
+                                    "{{ $comment['content'] }}"
+                                </p>
 
-                                    <div class="text-right text-sm">
+                                <div class="text-right text-sm">
 
-                                        <form method="POST" class="delete inline-block" action="{{ route('comment.delete', $comment->id) }}">
-                                            @csrf
-                                            <button class="px-3 py-2 text-grey-darkest">
-                                                Delete
-                                            </button>
-                                        </form>
-                                        
-                                        <button data-comment-id="{{ $comment->id }}" class="reply px-3 py-2 text-white bg-yellow-darkest">
-                                            Reply
+                                    <form method="POST" class="delete inline-block" action="{{ route('comment.delete', $comment['id']) }}">
+                                        @csrf
+                                        <button class="px-3 py-2 text-grey-darkest">
+                                            Delete
                                         </button>
-                                    </div>
+                                    </form>
+                                    
+                                    <button data-comment-id="{{ $comment['id'] }}" class="reply px-3 py-2 text-white bg-yellow-darkest">
+                                        Reply
+                                    </button>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
                     @endforeach
                     
                 </div>
