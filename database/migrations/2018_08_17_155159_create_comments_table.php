@@ -19,7 +19,6 @@ class CreateCommentsTable extends Migration
 
             $table->integer('poster_id')->unsigned();
             $table->integer('thread_id')->unsigned();
-            $table->integer('parent_comment_id')->unsigned()->nullable();
             $table->text('content');
 
             $table->foreign('poster_id')
@@ -29,10 +28,6 @@ class CreateCommentsTable extends Migration
             $table->foreign('thread_id')
                 ->references('id')
                 ->on('threads');
-            
-            $table->foreign('parent_comment_id')
-                ->references('id')
-                ->on('comments');
         });
     }
 
