@@ -64,6 +64,16 @@
 
                                 {{-- Card Header --}}
                                 <p class="mb-2 text-xs">
+                                    <span class="tracking-tight mr-2">
+                                        <a data-comment-id="{{ $comment->id }}" class="btn-upvote text-black hover:text-blue no-underline">
+                                            <i class="fa fa-arrow-up"></i>
+                                        </a>
+    
+                                        <a data-comment-id="{{ $comment->id }}" class="btn-downvote text-black hover:text-orange no-underline">
+                                            <i class="fa fa-arrow-down"></i>
+                                        </a>
+                                    </span>
+                                    
                                     <span class="font-bold text-red"> {{ $comment->poster_name }} </span>
                                     <span> {{ $comment->created_at }}</span>
                                 </p>
@@ -150,7 +160,8 @@
                 });
 
             });
-
+            
+            // Handle comment deletion
             $('form.delete').each((i, form) => {
                 $(form).submit((e) => {
                     e.preventDefault();
@@ -178,31 +189,16 @@
                     })
                 });
             });
+
+            // Handle upvoting
+            $('a.btn-upvote').each((i, btn) => {
+                $(btn).click(() => {
+                    let comment_id = $(btn).data('comment-id');
+                    axios.post(`/comment/${comment_id}/upvote`)
+                        .then(response => { swal('Success!'); })
+                        .catch(error => { swal('Error!') })
+                });
+            });
         });
     </script>
 </html>
-
-{{-- <div class="p-2 border-black border-b"> --}}
-    {{-- <form method="post" action="{{ route('comment.create', $thread) }}">
-        @csrf
-
-        <input type="hidden" name="parent_comment_id" value="{{ $comment->id }}">
-
-        <textarea name="content" class="w-full focus:shadow-md border border-black mb-2 p-3" name="" id="" cols="30" rows="2"></textarea>
-
-        <div class="text-right">
-            <button class="py-1 hover:bg-red text-xs px-2 bg-red-dark text-white">
-                REPLY
-            </button>
-        </div>
-    </form> --}}
-
-    {{-- <div class="text-right">
-        <form action="{{ route('comment.delete', $comment->id) }}" method="post">
-            @csrf
-            <button class="bg-black text-white py-1 px-2 text-xs">
-                Delete
-            </button>
-        </form>
-    </div> --}}
-{{-- </div> --}}

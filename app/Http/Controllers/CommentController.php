@@ -44,6 +44,16 @@ class CommentController extends Controller
         return back();
     }
 
+    public function upvote(Comment $comment)
+    {
+        abort(403);
+    }
+
+    public function downvote(Comment $comment)
+    {
+
+    }
+
     public function delete(Comment $comment)
     {
         $descendant_ids = CommentPath::query()
