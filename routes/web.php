@@ -20,10 +20,17 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::middleware(['auth'])->group(function() {
-    Route::get('/thread/all', 'ThreadController@index')->name('thread.index');
-    Route::post('/thread/create', 'ThreadController@create')->name('thread.create');
-    Route::get('/thread/{thread}', 'ThreadController@detail')->name('thread.detail');
+    Route::prefix('/thread')->group(function() {
+        Route::get('/all', 'ThreadController@index')->name('thread.index');
+        Route::post('/create', 'ThreadController@create')->name('thread.create');
+        Route::get('/{thread}/detail', 'ThreadController@detail')->name('thread.detail');
+    });    
 
     Route::post('/thread/{thread}/comment/create', 'CommentController@create')->name('comment.create');
-    Route::post('/comment/{comment}/delete', 'CommentController@delete')->name('comment.delete');
+
+    Route::prefix('/comment')->group(function() {
+        Route::post('/{comment}/delete', 'CommentController@delete')->name('comment.delete');
+        Route::post('/{comment}/upvote', 'CommentController@upvote')->name('comment.upvote');
+        Route::post('/{comment}/downvote', 'CommentController@upvote')->name('comment.downvote');
+    });
 });
