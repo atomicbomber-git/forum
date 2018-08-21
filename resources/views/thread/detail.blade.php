@@ -58,18 +58,18 @@
                 </div>
 
                 <div class="p-4 bg-indigo-dark text-base">
-                    @foreach ($comment_tree as $comment)
+                    @foreach ($comments as $comment)
                         <div style="margin-left: {{ 3 * ($comment->tree_depth - 1) }}rem" class="bg-white shadow-md my-2">
                             <div class="border-black border-b p-2">
 
                                 {{-- Card Header --}}
                                 <p class="mb-2 text-xs">
                                     <span class="tracking-tight mr-2">
-                                        <a data-comment-id="{{ $comment->id }}" class="btn-upvote text-black hover:text-blue no-underline">
+                                        <a data-comment-id="{{ $comment->id }}" class="btn-upvote {{ $comment->vote_type == 'UP' ? 'text-blue' : '' }} hover:text-blue no-underline">
                                             <i class="fa fa-arrow-up"></i>
                                         </a>
     
-                                        <a data-comment-id="{{ $comment->id }}" class="btn-downvote text-black hover:text-orange no-underline">
+                                        <a data-comment-id="{{ $comment->id }}" class="btn-downvote hover:text-orange no-underline">
                                             <i class="fa fa-arrow-down"></i>
                                         </a>
                                     </span>
@@ -195,7 +195,18 @@
                 $(btn).click(() => {
                     let comment_id = $(btn).data('comment-id');
                     axios.post(`/comment/${comment_id}/upvote`)
-                        .then(response => { swal('Success!'); })
+                        .then(response => {
+                            switch (response.data.action) {
+                                case 'create':
+                                    alert('Create');
+                                    $(btn).addClass('text-blue');
+                                    break;
+                                case 'delete':
+                                    alert('Delete');
+                                    $(btn).removeClass('text-blue');
+                                    break;
+                            } 
+                        })
                         .catch(error => { swal('Error!') })
                 });
             });

@@ -41,30 +41,32 @@ class ThreadController extends Controller
 
         $commentTree = DB::table('comment_paths')
             ->select(
-                'comments.id',
-                DB::raw('GROUP_CONCAT(ranks.row_number ORDER BY tree_depth DESC) AS hierarchy'),
-                DB::raw('COUNT(*) AS tree_depth'),
-                'users.name AS poster_name',
-                'comments.content',
-                'comments.created_at'
+                'comment_paths.descendant_id AS id',
+                DB::raw('GROUP_CONCAT(ranks.row_number ORDER BY tree_depth DESC) AS ancestor_hierarchy'),
+                DB::raw('COUNT(*) AS tree_depth')
             )
-            ->join('comments', 'comments.id', '=', 'comment_paths.descendant_id')
             ->joinSub($subQuery, 'ranks', function($join) {
                 $join->on('ranks.id', '=', 'comment_paths.ancestor_id');
             })
-            ->join('users', 'users.id', '=', 'comments.poster_id')
-            ->where('comments.thread_id', $thread->id)
-            ->groupBy('comments.id', 'poster_name', 'comments.content', 'comments.created_at')
-            ->orderBy('hierarchy')
-            ->get()
-            ->map(function($item) {
-                $item->created_at = (new Date($item->created_at))->diffForHumans();
-                return $item;
-            });
+            ->groupBy('comment_paths.descendant_id');
 
+        $comments = DB::table('comments')
+            ->select('comments.id', 'comments.content', 'users.name AS poster_name', 'comments.created_at', 'votes.vote_type', 'comment_tree.tree_depth')
+            ->joinSub($commentTree, 'comment_tree', function($join) {
+                $join->on('comments.id', '=', 'comment_tree.id');
+            })
+            ->join('users', 'users.id', '=', 'comments.poster_id')
+            ->leftJoin('votes', function($join) {
+                $join->on('votes.votable_id', '=', 'comments.id')
+                    ->where('votes.voter_id', auth()->user()->id)
+                    ->where('votes.votable_type', 'COMMENT');
+            })
+            ->orderBy('comment_tree.ancestor_hierarchy')
+            ->get();
+        
         return view('thread.detail', [
             'thread' => $thread,
-            'comment_tree' => $commentTree
+            'comments' => $comments
         ]);
     }
 }

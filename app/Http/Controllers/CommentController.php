@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Comment;
 use App\CommentPath;
 use App\Thread;
+use App\Vote;
 use DB;
 
 class CommentController extends Controller
@@ -44,9 +45,33 @@ class CommentController extends Controller
         return back();
     }
 
-    public function upvote(Comment $comment)
+    public function upvote($comment)
     {
-        abort(403);
+        $vote_data = [
+            'voter_id' => auth()->user()->id,
+            'votable_id' => $comment,
+            'votable_type' => 'COMMENT',
+            'vote_type' => 'UP'
+        ];
+
+        $existing_vote = Vote::query()
+            ->where($vote_data)
+            ->first();
+        
+        if ($existing_vote != NULL) {
+            Vote::where($vote_data)
+                ->delete();
+            
+            return [
+                'action' => 'delete'
+            ];
+        } 
+
+        Vote::create($vote_data);
+
+        return [
+            'action' => 'create'
+        ];
     }
 
     public function downvote(Comment $comment)
