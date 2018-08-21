@@ -36,7 +36,7 @@ class ThreadController extends Controller
         DB::statement('SET @row_number = 0');
         $subQuery = DB::table('comments')
             ->select('comments.id', DB::raw('@row_number:=@row_number+1 AS row_number'))
-            ->whereRaw('thread_id', $thread->id)
+            ->where('thread_id', $thread->id)
             ->orderBy('created_at');
 
         $commentTree = DB::table('comment_paths')
