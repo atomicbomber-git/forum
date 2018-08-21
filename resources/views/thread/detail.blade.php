@@ -59,25 +59,28 @@
 
                 <div class="p-4 bg-indigo-dark text-base">
                     @foreach ($comment_tree as $comment)
-                        <div style="margin-left: {{ 2 * $comment->tree_depth }}rem" class="bg-white shadow-md my-2">
+                        <div style="margin-left: {{ 3 * ($comment->tree_depth - 1) }}rem" class="bg-white shadow-md my-2">
                             <div class="border-black border-b p-2">
+
+                                {{-- Card Header --}}
                                 <p class="mb-2 text-xs">
                                     <span class="font-bold text-red"> {{ $comment->poster_name }} </span>
                                     <span> {{ $comment->created_at }}</span>
                                 </p>
+
+                                {{-- Card Body --}}
                                 <p>
                                     "{{ $comment->content }}"
                                 </p>
 
+                                {{-- Card Footer --}}
                                 <div class="text-right text-sm">
-
                                     <form method="POST" class="delete inline-block" action="{{ route('comment.delete', $comment->id) }}">
                                         @csrf
                                         <button class="px-3 py-2 text-grey-darkest">
                                             Delete
                                         </button>
                                     </form>
-                                    
                                     <button data-comment-id="{{ $comment->id }}" class="reply px-3 py-2 text-white bg-yellow-darkest">
                                         Reply
                                     </button>
