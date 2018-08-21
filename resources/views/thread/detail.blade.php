@@ -105,7 +105,6 @@
         input_original.parentNode.removeChild(input_original);
 
         $(input_box).find('#input-textarea').change(() => {
-            // console.log($('#input-textarea').val());
             swal.setActionValue($('#input-textarea').val());
         });
 
