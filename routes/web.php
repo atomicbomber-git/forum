@@ -24,9 +24,8 @@ Route::middleware(['auth'])->group(function() {
         Route::get('/all', 'ThreadController@index')->name('thread.index');
         Route::post('/create', 'ThreadController@create')->name('thread.create');
         Route::get('/{thread}/detail', 'ThreadController@detail')->name('thread.detail');
+        Route::post('/{thread}/comment/create', 'CommentController@create')->name('comment.create');
     });    
-
-    Route::post('/thread/{thread}/comment/create', 'CommentController@create')->name('comment.create');
 
     Route::prefix('/comment')->group(function() {
         Route::post('/{comment}/delete', 'CommentController@delete')->name('comment.delete');
